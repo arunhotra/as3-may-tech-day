@@ -1,0 +1,1010 @@
+{
+	"info": {
+		"_postman_id": "c02e20ac-963f-415a-b36d-7ba64c2e238a",
+		"name": "Postman Collections AS3 - templatized",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create App",
+			"item": [
+				{
+					"name": "HTTP",
+					"item": [
+						{
+							"name": "HTTP app",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "bab2d9a8-eac4-4c81-8536-f6413f523726",
+										"exec": [
+											"var app_name = pm.environment.get('http_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"TCP_Profile\"\r\n                },\r\n                \"{{HTTPPROFILE}}\": {\r\n                    \"class\": \"HTTP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"tcp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 900,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"round-robin\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n                \"{{VS}}\": {\r\n\t                \"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_HTTP\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileTCP\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"profileHTTP\": {\r\n                        \"use\": \"{{HTTPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{http_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 80\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}} | {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						},
+						{
+							"name": "HTTP app LTM Policy",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5c96fc20-1b22-4eb3-bd2d-fbb740488272",
+										"exec": [
+											"var app_name = pm.environment.get('http_ltm_policy_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"var LTM_POLICY = app_name + '_' + company_name + '_' + 'com_ltmpolicy' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"pm.environment.set('LTM_POLICY', LTM_POLICY);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"TCP_Profile\"\r\n                },\r\n                \"{{HTTPPROFILE}}\": {\r\n                    \"class\": \"HTTP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"tcp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"round-robin\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n\t\t\t\t\"{{LTM_POLICY}}\": {\r\n                    \"class\": \"Endpoint_Policy\",\r\n                    \"remark\": \"L7 Policy for application 1\",\r\n                    \"rules\": [\r\n                        {\r\n                            \"name\": \"support_a\",\r\n                            \"conditions\": [\r\n                                {\r\n                                    \"type\": \"httpUri\",\r\n                                    \"event\": \"request\",\r\n                                    \"path\": {\r\n                                        \"operand\": \"equals\",\r\n                                        \"values\": [\r\n                                            \"/support/mail\"\r\n                                        ]\r\n                                    }\r\n                                }\r\n                            ],\r\n                            \"actions\": [\r\n                                {\r\n                                    \"type\": \"httpRedirect\",\r\n                                    \"event\": \"response\",\r\n                                    \"location\": \"https://mail.example.com\"\r\n                                }\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"name\": \"support_b\",\r\n                            \"conditions\": [\r\n                                {\r\n                                    \"type\": \"httpUri\",\r\n                                    \"event\": \"request\",\r\n                                    \"path\": {\r\n                                        \"operand\": \"equals\",\r\n                                        \"values\": [\r\n                                            \"/support/www\"\r\n                                        ]\r\n                                    }\r\n                                }\r\n                            ],\r\n                            \"actions\": [\r\n                                {\r\n                                    \"type\": \"httpRedirect\",\r\n                                    \"event\": \"response\",\r\n                                    \"location\": \"https://www.example.com\"\r\n                                }\r\n                            ]\r\n                        }\r\n                    ]\r\n                },\r\n                \"class\": \"Application\",\r\n                \"{{VS}}\": {\r\n\t                \"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_HTTP\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileTCP\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"profileHTTP\": {\r\n                        \"use\": \"{{HTTPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{http_ltm_policy_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 80,\r\n\t\t\t\t\t\"policyEndpoint\": \"{{LTM_POLICY}}\"\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}} | {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "HTTPs",
+					"item": [
+						{
+							"name": "HTTPs app Offload",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "619a455d-54e2-4570-80d5-70e9abc2d54f",
+										"exec": [
+											"var app_name = pm.environment.get('https_offload_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"var CERT = app_name + '_' + company_name + '_' + 'com_cert' ;\r",
+											"var CLIENT_SSL = app_name + '_' + company_name + '_' + 'com_clientssl' ;\r",
+											"\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"pm.environment.set('CERT', CERT);\r",
+											"pm.environment.set('CLIENT_SSL', CLIENT_SSL);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"TCP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"tcp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"least-connections-member\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 80,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n\t\t\t\t\"{{CLIENT_SSL}}\": {\r\n\t\t\t\t\t\"class\": \"TLS_Server\",\r\n\t\t\t\t\t\"certificates\": [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\"certificate\": \"{{CERT}}\"\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n                },\r\n\t\t\t\t\"{{CERT}}\": {\r\n\t\t\t\t\t  \"class\": \"Certificate\",\r\n\t\t\t\t\t  \"remark\": \"in practice we recommend using a passphrase\",\r\n\t\t\t\t\t  \"certificate\": \"-----BEGIN CERTIFICATE-----\\nMIICnDCCAgWgAwIBAgIJAJ5n2b0OCEjwMA0GCSqGSIb3DQEBCwUAMGcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApXYXNoaW5ndG9uMRAwDgYDVQQHDAdTZWF0dGxlMRQwEgYDVQQKDAtmNV9OZXR3b3JrczEbMBkGA1UEAwwSc2FtcGxlLmV4YW1wbGUubmV0MB4XDTE3MTEyNjE5NTAyNFoXDTE4MDIyNTE5NTAyNFowZzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCldhc2hpbmd0b24xEDAOBgNVBAcMB1NlYXR0bGUxFDASBgNVBAoMC2Y1X05ldHdvcmtzMRswGQYDVQQDDBJzYW1wbGUuZXhhbXBsZS5uZXQwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALEsuXmSXVQpYjrZPW+WiTBjn491mwZYT7Q92V1HlSBtM6WdWlK1aZN5sovfKtOX7Yrm8xa+e4o/zJ2QYLyyv5O+t2EGN/4qUEjEAPY9mwJdfzRQy6Hyzm84J0QkTuUJ/EjNuPji3D0QJRALUTzu1UqqDCEtiN9OGyXEkh7uvb7BAgMBAAGjUDBOMB0GA1UdDgQWBBSVHPNrGWrjWyZvckQxFYWO59FRFjAfBgNVHSMEGDAWgBSVHPNrGWrjWyZvckQxFYWO59FRFjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4GBAJeJ9SEckEwPhkXOm+IuqfbUS/RcziifBCTmVyE+Fa/j9pKSYTgiEBNdbJeBEa+gPMlQtbV7Y2dy8TKx/8axVBHiXC5geDML7caxOrAyHYBpnx690xJTh5OIORBBM/a/NvaR+P3CoVebr/NPRh9oRNxnntnqvqD7SW0U3ZPe3tJc\\n-----END CERTIFICATE-----\",\r\n\t\t\t\t\t  \"privateKey\": \"-----BEGIN RSA PRIVATE KEY-----\\nProc-Type: 4,ENCRYPTED\\nDEK-Info: AES-256-CBC,D8FFCE6B255601587CB54EC29B737D31\\n\\nkv4Fc3Jn0Ujkj0yRjt+gQQfBLSNF2aRLUENXnlr7Xpzqu0Ahr3jS1bAAnd8IWnsR\\nyILqVmKsYF2DoHh0tWiEAQ7/y/fe5DTFhK7N4Wml6kp2yVMkP6KC4ssyYPw27kjK\\nDBwBZ5O8Ioej08A5sgsLCmglbmtSPHJUn14pQnMTmLOpEtOsu6S+2ibPgSNpdg0b\\nCAJNG/KHe+Vkx59qNDyDeKb7FZOlsX30+y67zUq9GQqJEDuysPJ2BUNP0IJXAjst\\nFIt1qNoZew+5KDYs7u/lPxcMGTirUhgI84Jy4WcDvSOsP/tKlxj04TbIE3epmSKy\\n+TihHkwY7ngIGtcm3Sfqk5jz2RXoj1/Ac3SW8kVTYaOUogBhn7zAq4Wju6Et4hQG\\nRGapsJp1aCeZ/a4RCDTxspcKoMaRa97/URQb0hBRGx3DGUhzpmX9zl7JI2Xa5D3R\\nmdBXtjLKYJTdIMdd27prBEKhMUpae2rz5Mw4J907wZeBq/wu+zp8LAnecfTe2nGY\\nE32x1U7gSEdYOGqnwxsOexb1jKgCa67Nw9TmcMPV8zmH7R9qdvgxAbAtwBl1F9OS\\nfcGaC7epf1AjJLtaX7krWmzgASHl28Ynh9lmGMdv+5QYMZvKG0LOg/n3m8uJ6sKy\\nIzzvaJswwn0j5P5+czyoV5CvvdCfKnNb+3jUEN8I0PPwjBGKr4B1ojwhogTM248V\\nHR69D6TxFVMfGpyJhCPkbGEGbpEpcffpgKuC/mEtMqyDQXJNaV5HO6HgAJ9F1P6v\\n5ehHHTMRvzCCFiwndHdlMXUjqSNjww6me6dr6LiAPbejdzhL2vWx1YqebOcwQx3G\\n-----END RSA PRIVATE KEY-----\",\r\n\t\t\t\t\t  \"passphrase\": {\r\n\t\t\t\t\t\t\"ciphertext\": \"ZjVmNQ==\",\r\n\t\t\t\t\t\t\"protected\": \"eyJhbGciOiJkaXIiLCJlbmMiOiJub25lIn0\"\r\n\t\t\t\t\t  }\r\n\t\t\t    },\r\n                \"{{VS}}\": {\r\n\t                \"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_HTTPS\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileTCP\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{https_offload_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 443,\r\n\t\t\t\t\t\"serverTLS\": \"{{CLIENT_SSL}}\"\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}} | {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n\t\t\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						},
+						{
+							"name": "HTTPs app Bridging",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d8fe3392-ac48-4650-9097-0375f9f63343",
+										"exec": [
+											"var app_name = pm.environment.get('https_bridging_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"var CERT = app_name + '_' + company_name + '_' + 'com_cert' ;\r",
+											"var CLIENT_SSL = app_name + '_' + company_name + '_' + 'com_clientssl' ;\r",
+											"var SERVER_SSL = app_name + '_' + company_name + '_' + 'com_serverssl' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"pm.environment.set('CERT', CERT);\r",
+											"pm.environment.set('CLIENT_SSL', CLIENT_SSL);\r",
+											"pm.environment.set('SERVER_SSL', SERVER_SSL);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"TCP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"tcp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"least-connections-member\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 443,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 443,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n\t\t\t\t\"{{CLIENT_SSL}}\": {\r\n\t\t\t\t\t\"class\": \"TLS_Server\",\r\n\t\t\t\t\t\"certificates\": [\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\"certificate\": \"{{CERT}}\"\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t]\r\n                },\r\n\t\t\t\t\"{{SERVER_SSL}}\": {\r\n\t\t\t\t\t\"class\": \"TLS_Client\"\r\n                },\r\n\t\t\t\t\"{{CERT}}\": {\r\n\t\t\t\t\t  \"class\": \"Certificate\",\r\n\t\t\t\t\t  \"remark\": \"in practice we recommend using a passphrase\",\r\n\t\t\t\t\t  \"certificate\": \"-----BEGIN CERTIFICATE-----\\nMIICnDCCAgWgAwIBAgIJAJ5n2b0OCEjwMA0GCSqGSIb3DQEBCwUAMGcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApXYXNoaW5ndG9uMRAwDgYDVQQHDAdTZWF0dGxlMRQwEgYDVQQKDAtmNV9OZXR3b3JrczEbMBkGA1UEAwwSc2FtcGxlLmV4YW1wbGUubmV0MB4XDTE3MTEyNjE5NTAyNFoXDTE4MDIyNTE5NTAyNFowZzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCldhc2hpbmd0b24xEDAOBgNVBAcMB1NlYXR0bGUxFDASBgNVBAoMC2Y1X05ldHdvcmtzMRswGQYDVQQDDBJzYW1wbGUuZXhhbXBsZS5uZXQwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALEsuXmSXVQpYjrZPW+WiTBjn491mwZYT7Q92V1HlSBtM6WdWlK1aZN5sovfKtOX7Yrm8xa+e4o/zJ2QYLyyv5O+t2EGN/4qUEjEAPY9mwJdfzRQy6Hyzm84J0QkTuUJ/EjNuPji3D0QJRALUTzu1UqqDCEtiN9OGyXEkh7uvb7BAgMBAAGjUDBOMB0GA1UdDgQWBBSVHPNrGWrjWyZvckQxFYWO59FRFjAfBgNVHSMEGDAWgBSVHPNrGWrjWyZvckQxFYWO59FRFjAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4GBAJeJ9SEckEwPhkXOm+IuqfbUS/RcziifBCTmVyE+Fa/j9pKSYTgiEBNdbJeBEa+gPMlQtbV7Y2dy8TKx/8axVBHiXC5geDML7caxOrAyHYBpnx690xJTh5OIORBBM/a/NvaR+P3CoVebr/NPRh9oRNxnntnqvqD7SW0U3ZPe3tJc\\n-----END CERTIFICATE-----\",\r\n\t\t\t\t\t  \"privateKey\": \"-----BEGIN RSA PRIVATE KEY-----\\nProc-Type: 4,ENCRYPTED\\nDEK-Info: AES-256-CBC,D8FFCE6B255601587CB54EC29B737D31\\n\\nkv4Fc3Jn0Ujkj0yRjt+gQQfBLSNF2aRLUENXnlr7Xpzqu0Ahr3jS1bAAnd8IWnsR\\nyILqVmKsYF2DoHh0tWiEAQ7/y/fe5DTFhK7N4Wml6kp2yVMkP6KC4ssyYPw27kjK\\nDBwBZ5O8Ioej08A5sgsLCmglbmtSPHJUn14pQnMTmLOpEtOsu6S+2ibPgSNpdg0b\\nCAJNG/KHe+Vkx59qNDyDeKb7FZOlsX30+y67zUq9GQqJEDuysPJ2BUNP0IJXAjst\\nFIt1qNoZew+5KDYs7u/lPxcMGTirUhgI84Jy4WcDvSOsP/tKlxj04TbIE3epmSKy\\n+TihHkwY7ngIGtcm3Sfqk5jz2RXoj1/Ac3SW8kVTYaOUogBhn7zAq4Wju6Et4hQG\\nRGapsJp1aCeZ/a4RCDTxspcKoMaRa97/URQb0hBRGx3DGUhzpmX9zl7JI2Xa5D3R\\nmdBXtjLKYJTdIMdd27prBEKhMUpae2rz5Mw4J907wZeBq/wu+zp8LAnecfTe2nGY\\nE32x1U7gSEdYOGqnwxsOexb1jKgCa67Nw9TmcMPV8zmH7R9qdvgxAbAtwBl1F9OS\\nfcGaC7epf1AjJLtaX7krWmzgASHl28Ynh9lmGMdv+5QYMZvKG0LOg/n3m8uJ6sKy\\nIzzvaJswwn0j5P5+czyoV5CvvdCfKnNb+3jUEN8I0PPwjBGKr4B1ojwhogTM248V\\nHR69D6TxFVMfGpyJhCPkbGEGbpEpcffpgKuC/mEtMqyDQXJNaV5HO6HgAJ9F1P6v\\n5ehHHTMRvzCCFiwndHdlMXUjqSNjww6me6dr6LiAPbejdzhL2vWx1YqebOcwQx3G\\n-----END RSA PRIVATE KEY-----\",\r\n\t\t\t\t\t  \"passphrase\": {\r\n\t\t\t\t\t\t\"ciphertext\": \"ZjVmNQ==\",\r\n\t\t\t\t\t\t\"protected\": \"eyJhbGciOiJkaXIiLCJlbmMiOiJub25lIn0\"\r\n\t\t\t\t\t  }\r\n\t\t\t    },\r\n                \"{{VS}}\": {\r\n\t                \"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_HTTPS\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileTCP\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{https_bridging_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 443,\r\n\t\t\t\t\t\"serverTLS\": \"{{CLIENT_SSL}}\",\r\n\t\t\t\t\t\"clientTLS\": \"{{SERVER_SSL}}\"\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}}  |  {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n\t\t\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Other",
+					"item": [
+						{
+							"name": "TCP app",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "5115f10b-3ce5-42cf-a5ed-8ace4025c6d4",
+										"exec": [
+											"var app_name = pm.environment.get('tcp_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"TCP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"tcp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"least-connections-member\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 4142,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 4142,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n                \"{{VS}}\": {\r\n\t\t\t\t\t\"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_TCP\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileTCP\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{tcp_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 4142\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}}| {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						},
+						{
+							"name": "UDP app",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "dbbfe068-f316-4e05-9651-941bd9f455ec",
+										"exec": [
+											"var app_name = pm.environment.get('udp_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n            \"{{APP}}\": {\r\n                \"{{UDPPROFILE}}\": {\r\n                    \"class\": \"UDP_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"udp\",\r\n                    \"receive\": \"\",\r\n                    \"send\": \"\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"least-connections-member\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 4142,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 4142,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n                \"{{VS}}\": {\r\n\t\t\t\t\t\"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_UDP\",\r\n                    \"layer4\": \"udp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileUDP\": {\r\n                        \"use\": \"{{UDPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{udp_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 4142\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}} | {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						},
+						{
+							"name": "Fast L4 app",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "99e19534-a0b0-4079-9e66-b14d6a463d77",
+										"exec": [
+											"var app_name = pm.environment.get('fastl4_app_name');\r",
+											"var company_name = pm.environment.get('company_name');\r",
+											"\r",
+											"var TENANT = app_name + '_' + company_name + '_' + 'com' ;\r",
+											"var APP = app_name + '_' + company_name + '_' + 'com_app' ;\r",
+											"var TCPPROFILE = app_name + '_' + company_name + '_' + 'com_tcp' ;\r",
+											"var UDPPROFILE = app_name + '_' + company_name + '_' + 'com_udp' ;\r",
+											"var HTTPPROFILE = app_name + '_' + company_name + '_' + 'com_http' ;\r",
+											"var PERSISTENCE = app_name + '_' + company_name + '_' + 'com_persistence' ;\r",
+											"var MONITOR = app_name + '_' + company_name + '_' + 'com_mon' ;\r",
+											"var POOL = app_name + '_' + company_name + '_' + 'com_pool' ;\r",
+											"var VS = app_name + '_' + company_name + '_' + 'com_Vs' ;\r",
+											"\r",
+											"pm.environment.set('TENANT', TENANT);\r",
+											"pm.environment.set('APP', APP);\r",
+											"pm.environment.set('TCPPROFILE', TCPPROFILE);\r",
+											"pm.environment.set('UDPPROFILE', UDPPROFILE);\r",
+											"pm.environment.set('HTTPPROFILE', HTTPPROFILE);\r",
+											"pm.environment.set('PERSISTENCE', PERSISTENCE);\r",
+											"pm.environment.set('MONITOR', MONITOR);\r",
+											"pm.environment.set('POOL', POOL);\r",
+											"pm.environment.set('VS', VS);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{username}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"deploy\",\r\n    \"class\": \"AS3\",\r\n    \"declaration\": {\r\n        \"{{TENANT}}\": {\r\n            \"{{APP}}\": {\r\n                \"{{TCPPROFILE}}\": {\r\n                    \"class\": \"L4_Profile\"\r\n                },\r\n                \"{{MONITOR}}\": {\r\n                    \"class\": \"Monitor\",\r\n                    \"interval\": {{monitor_interval}},\r\n                    \"monitorType\": \"https\",\r\n                    \"receive\": \"HTTP/1.\",\r\n                    \"send\": \"GET/HTTP/1.0\\r\\r\",\r\n                    \"timeout\": {{monitor_timeout}}\r\n                },\r\n                \"{{PERSISTENCE}}\": {\r\n                    \"class\": \"Persist\",\r\n                    \"duration\": 1800,\r\n                    \"persistenceMethod\": \"source-address\"\r\n                },\r\n                \"{{POOL}}\": {\r\n                    \"class\": \"Pool\",\r\n                    \"loadBalancingMode\": \"least-connections-member\",\r\n                    \"members\": [\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_1_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 443,\r\n                            \"shareNodes\": true\r\n                        },\r\n                        {\r\n                            \"priorityGroup\": 0,\r\n                            \"serverAddresses\": [\r\n                                \"{{pool_member_2_addr}}\"\r\n                            ],\r\n                            \"servicePort\": 443,\r\n                            \"shareNodes\": true\r\n                        }\r\n                    ],\r\n                    \"minimumMembersActive\": 0,\r\n                    \"monitors\": [\r\n                        {\r\n                            \"use\": \"{{MONITOR}}\"\r\n                        }\r\n                    ],\r\n                    \"slowRampTime\": 10\r\n                },\r\n                \"class\": \"Application\",\r\n                \"{{VS}}\": {\r\n\t                \"metadata\": {\r\n\t\t\t\t\t\t\"application_name\": {\"value\":\"{{APPLICATION_NAME}}\"},\r\n\t\t\t\t\t\t\"application_contact_name\": { \"value\" : \"{{APPLICATION_CONTACT_NAME}}\" },\r\n\t\t\t\t\t\t\"application_contact_email\": {\"value\" : \"{{APPLICATION_CONTACT_EMAIL}}\" },\r\n\t\t\t\t\t\t\"application_contact_phone\": { \"value\" : \"{{APPLICATION_CONTACT_PHONE}}\" },\r\n\t\t\t\t\t\t\"application_description\": { \"value\": \"{{APPLICATION_DESCRIPTION}}\" }\r\n\t\t                },\r\n                    \"class\": \"Service_L4\",\r\n                    \"layer4\": \"tcp\",\r\n                    \"persistenceMethods\": [\r\n                        {\r\n                            \"use\": \"{{PERSISTENCE}}\"\r\n                        }\r\n                    ],\r\n                    \"pool\": \"{{POOL}}\",\r\n                    \"profileL4\": {\r\n                        \"use\": \"{{TCPPROFILE}}\"\r\n                    },\r\n                    \"virtualAddresses\": [\r\n                        \"{{fastl4_vip_address}}\"\r\n                    ],\r\n                    \"virtualPort\": 443\r\n                },\r\n                \"template\": \"generic\"\r\n            },\r\n            \"class\": \"Tenant\"\r\n        },\r\n        \"class\": \"ADC\",\r\n        \"id\": \"{{APP}}\",\r\n        \"label\": \"{{APP}}\",\r\n        \"remark\": \"{{APPLICATION_NAME}} | {{APPLICATION_CONTACT_NAME}}\",\r\n        \"schemaVersion\": \"3.7.0\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        }\r\n    },\r\n    \"persist\": true\r\n}"
+								},
+								"url": {
+									"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare?async=true",
+									"protocol": "https",
+									"host": [
+										"{{biq_ip_address}}"
+									],
+									"path": [
+										"mgmt",
+										"shared",
+										"appsvcs",
+										"declare"
+									],
+									"query": [
+										{
+											"key": "async",
+											"value": "true"
+										}
+									]
+								},
+								"description": "HTTP application"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			]
+		},
+		{
+			"name": "Read ",
+			"item": [
+				{
+					"name": "List all declarations - complete",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{_f5_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare/",
+							"protocol": "https",
+							"host": [
+								"{{biq_ip_address}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"appsvcs",
+								"declare",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List one declaration - complete",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "adb0e664-c8dc-4a57-9a78-a14af8c7e632",
+								"exec": [
+									"var app_name = pm.environment.get('list_app_name');\r",
+									"var company_name = pm.environment.get('company_name');\r",
+									"\r",
+									"var APP_TO_LIST = app_name + '_' + company_name + '_' + 'com' ;\r",
+									"\r",
+									"pm.environment.set('APP_TO_LIST', APP_TO_LIST);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{_f5_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare/{{APP_TO_LIST}}",
+							"protocol": "https",
+							"host": [
+								"{{biq_ip_address}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"appsvcs",
+								"declare",
+								"{{APP_TO_LIST}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Deployment task (only used to retrieve status of Request)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{_f5_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/task/bfebbd7d-0008-44a3-8159-543bcedf74f5",
+							"protocol": "https",
+							"host": [
+								"{{biq_ip_address}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"appsvcs",
+								"task",
+								"bfebbd7d-0008-44a3-8159-543bcedf74f5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Info about AS3 being used",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{_f5_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/info",
+							"protocol": "https",
+							"host": [
+								"{{biq_ip_address}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"appsvcs",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "Delete specific app",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "840cc424-c0dd-4529-9174-9d13e9b8581c",
+								"exec": [
+									"var app_name = pm.environment.get('delete_app_name');\r",
+									"var company_name = pm.environment.get('company_name');\r",
+									"\r",
+									"var APP_TO_DELETE = app_name + '_' + company_name + '_' + 'com' ;\r",
+									"\r",
+									"pm.environment.set('APP_TO_DELETE', APP_TO_DELETE);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{_f5_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"class\": \"AS3\",\r\n    \r\n    \"declaration\": {\r\n    \t\"id\": \"{{APP_TO_DELETE}}\",\r\n    \t\"schemaVersion\": \"3.7.0\",\r\n        \"class\": \"ADC\",\r\n        \"target\": {\r\n            \"address\": \"{{bip_ip_address}}\"\r\n        },\r\n        \"{{APP_TO_DELETE}}\": {\r\n            \"class\": \"Tenant\"\r\n        }\r\n    }\r\n}\r\n \r\n"
+						},
+						"url": {
+							"raw": "https://{{biq_ip_address}}/mgmt/shared/appsvcs/declare",
+							"protocol": "https",
+							"host": [
+								"{{biq_ip_address}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"appsvcs",
+								"declare"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
