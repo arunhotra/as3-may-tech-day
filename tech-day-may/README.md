@@ -2,7 +2,7 @@
 
 ## Lab Environment
 
-UDF Blueprint: AS3 PS Techday Lab Jan 2019
+UDF Blueprint: AS3 PS Techday Lab May 2019
 
 ### Networks
 
@@ -67,6 +67,6 @@ Next, set the environment and start exploring the collection:
 1. In the dropdown at the top right, where it says "No Environment" select: "AS3Demo"
 2. On the left hand side, where you see History & Collections, select Collections, and expand out "Postman Collections AS3".
 
-Follow lab guide
+Follow lab guide (In the LabGuide folder from the repository)
 
 ---
