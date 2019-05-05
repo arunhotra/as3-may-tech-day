@@ -34,6 +34,8 @@ UDF Blueprint: AS3 PS Techday Lab May 2019
 - [GIT and GITHUB - branching and merging] - (https://www.youtube.com/watch?v=FyAAIHHClqI&t=209s)
 - [GIT and GITHUB - Remotes] - (https://www.youtube.com/watch?v=Gg4bLk8cGNo&t=71s)
 
+- [Dev Ops fundamentals for sales professionals] - https://hive.f5.com/docs/DOC-50153
+
 ## Lab Guide
 
 ### Start UDF Lab Environment
